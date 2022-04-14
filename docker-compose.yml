@@ -1,0 +1,9 @@
+version: "1"
+
+services:
+  sonarqubot-backend:
+    image: sonarqubot-backend:latest
+    build:
+      context: .
+    ports:
+      - "8080:8080"
