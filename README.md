@@ -2,9 +2,21 @@
 
 ## Docker
 
-To build docker container:
+Package the jar-file first:
+
+> mvn package
+
+...then build docker container:
+
+> docker compose build
+
+...and run it:
 
 > docker compose up
+
+When you want to close it:
+
+> docker compose down
 
 ## Discord Bot token
 
