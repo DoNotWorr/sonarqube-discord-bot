@@ -2,21 +2,7 @@
 
 ## Docker
 
-Package the jar-file first:
-
-> mvn package
-
-...then build docker container:
-
-> docker compose build
-
-...and run it:
-
-> docker compose up
-
-When you want to close it:
-
-> docker compose down
+> docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
 
 ## Discord Bot token
 

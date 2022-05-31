@@ -26,9 +26,9 @@ public class BotConfiguration {
                 .login()
                 .block();
 
-        for(EventListener<T> listener : eventListeners) {
+        for (EventListener<T> listener : eventListeners) {
             client.on(listener.getEventType())
-                    .flatMap(listener::execute)
+                    .flatMap(listener::handle)
                     .onErrorResume(listener::handleError)
                     .subscribe();
 
