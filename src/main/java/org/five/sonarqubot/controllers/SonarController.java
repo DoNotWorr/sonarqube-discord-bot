@@ -1,12 +1,10 @@
 package org.five.sonarqubot.controllers;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.five.sonarqubot.client.Project;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -35,12 +33,12 @@ public class HttpRequests {
 
     }
 
-    @PostMapping(path = "/project")
-    public ResponseEntity<Object> create(@RequestParam String name, @RequestParam String project, @RequestParam String visibility) {
+    @PostMapping(path = "/create")
+    public ResponseEntity<Object> create(@RequestBody Project project) {
 
         RestTemplate restTemplate = new RestTemplate();
         String url = sonarAPI + "projects/create" +
-                "?name=" + name + "&project=" + project + "&visibility=" + visibility;
+                "?name=" +  project.getName() + "&project=" + project.getProject() + "&visibility=" + project.getVisibility();
 
         ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, authHeader(), Object.class, HttpStatus.CREATED);
         response.getBody();
@@ -48,8 +46,8 @@ public class HttpRequests {
 
     }
 
-    @GetMapping("/analyses")
-    public ResponseEntity<Object> getAnalysesByProject(@RequestParam String project) {
+    @GetMapping("/analysis")
+    public ResponseEntity<Object> getAnalysisByProject(@RequestParam String project) {
 
         RestTemplate restTemplate = new RestTemplate();
         String url = sonarAPI + "/measures/search_history" + "?component=" + project + "&metrics=" + metrics();
