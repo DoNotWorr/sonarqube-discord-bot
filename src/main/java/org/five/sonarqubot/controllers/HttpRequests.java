@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 @RestController
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:app.properties")
 
 public class HttpRequests {
     @Value("${user}")

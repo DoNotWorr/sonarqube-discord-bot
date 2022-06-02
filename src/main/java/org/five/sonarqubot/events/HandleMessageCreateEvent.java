@@ -1,18 +1,19 @@
 package org.five.sonarqubot.events;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import org.five.sonarqubot.scanner.ScannerService;
+
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
 public class HandleMessageCreateEvent implements EventListener<MessageCreateEvent> {
 
-    private final ScannerService scannerService;
+    // private final ScannerService scannerService;
     private final MessageService messageService;
     private final FileService fileService;
-    public HandleMessageCreateEvent(ScannerService scannerService, MessageService messageService, FileService fileService) {
-        this.scannerService = scannerService;
+
+    public HandleMessageCreateEvent(MessageService messageService, FileService fileService) {
+        //this.scannerService = scannerService;
         this.messageService = messageService;
         this.fileService = fileService;
     }
@@ -24,7 +25,7 @@ public class HandleMessageCreateEvent implements EventListener<MessageCreateEven
 
     @Override
     public Mono<Void> handle(MessageCreateEvent event) {
-        return messageService.onlyCodeMessages(event.getMessage()).log().then(); //1. Hämta meddelande med kod -> koden
+        return messageService.onlyCodeMessages(event.getMessage()).flatMap(messageService::getCode).flatMap(fileService::createFile).then(); //1. Hämta meddelande med kod -> koden
         //2. Skapa fil med kod        -> filnamn
         //3. Skapa projekt            -> project key (eller den infon man behöver för att starta scan)
         //4. Starta scan              -> void

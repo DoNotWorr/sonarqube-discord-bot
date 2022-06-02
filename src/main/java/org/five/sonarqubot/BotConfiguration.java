@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import java.util.List;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:app.properties")
 public class BotConfiguration {
 
     @Value("${token}")
