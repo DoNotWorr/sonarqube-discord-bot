@@ -2,7 +2,6 @@ package org.five.sonarqubot.controllers;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,14 +11,12 @@ import org.springframework.web.client.RestTemplate;
 
 
 @RestController
-@PropertySource("classpath:app.properties")
-
 public class HttpRequests {
     @Value("${user}")
     private String user;
     @Value("${password}")
     private String password;
-    @Value("${sonarqubeAPI}")
+    @Value("${sonar.api.url}")
     private String sonarAPI;
 
     @GetMapping("/")

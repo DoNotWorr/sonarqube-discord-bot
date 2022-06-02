@@ -36,8 +36,8 @@ build/
 .vscode/
 
 ### Tokens ###
-app.properties
+src/main/resources/secret.properties
 
 ### Sonar Scanner API ###
 .scannerwork
-.files-to-scan
+.scanner_code_files/
