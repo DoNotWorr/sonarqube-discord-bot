@@ -5,5 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface MessageService {
     public Mono<Message> onlyCodeMessages(Message eventMessage);
+
     public Mono<String> getCode(Message message);
 }

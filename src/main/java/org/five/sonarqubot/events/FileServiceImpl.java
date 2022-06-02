@@ -27,8 +27,6 @@ public class FileServiceImpl implements FileService {
                 Files.createDirectory(path);
                 System.out.println("Directory created");
             }
-            System.out.println("Directory already exists");
-
         } catch (IOException e) {
             System.err.println("Sorry, there was a problem creating a directory");
             e.printStackTrace();
@@ -36,10 +34,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Mono<String> createFile(String code) {
+    public Mono<String> createFile(String code, String filename) {
 
         try {
-            String path = "files-to-scan/file-to-scan";
+            String path = "files-to-scan/" + filename;
             File file = new File(path);
 
             // If file doesn't exists, then create it
@@ -49,15 +47,13 @@ public class FileServiceImpl implements FileService {
                 file.createNewFile();
                 System.out.println("Temp file : " + file.getName());
             }
-            System.out.println("File already exists");
-
             writeToFile(code, file);
 
         } catch (IOException e) {
             System.err.println("Sorry, there was a problem creating temporary file");
             e.printStackTrace();
         }
-        return Mono.just(code);
+        return Mono.just(filename);
     }
 
     private void writeToFile(String code, File file) {

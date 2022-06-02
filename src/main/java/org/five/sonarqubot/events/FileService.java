@@ -7,5 +7,6 @@ public interface FileService {
 
     void createDirectory();
 
-    Mono<String> createFile(String message);
+
+    Mono<String> createFile(String code, String filename);
 }
