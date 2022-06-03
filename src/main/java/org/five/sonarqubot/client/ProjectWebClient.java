@@ -33,9 +33,10 @@ public class ProjectWebClient {
 
 
 
+
         LinkedMultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("name", "");
-        formData.add("project", "gej");
+        formData.add("name", "tjej");
+        formData.add("project", "tjej");
 
         Mono<Object> createProject = client.post()
                 .uri("/create").bodyValue(formData)

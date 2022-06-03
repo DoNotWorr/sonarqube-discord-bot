@@ -1,16 +1,11 @@
 package org.five.sonarqubot.controllers;
 
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.five.sonarqubot.client.Project;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.UUID;
 
 
 @RestController
@@ -39,13 +34,13 @@ public class HttpRequests {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<String> create(@RequestBody MultiValueMap formData) {
+    public ResponseEntity<String> create(@RequestBody MultiValueMap<String,String> formData) {
         RestTemplate restTemplate = new RestTemplate();
         String url = sonarAPI + "/projects/create";
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, contentHeader());
+        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(formData, contentHeader());
 
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class, HttpMethod.POST);
         response.getBody();
         return response;
     }
@@ -66,8 +61,7 @@ public class HttpRequests {
     public ResponseEntity<Object> deleteByProject(@RequestParam String project) {
 
         RestTemplate restTemplate = new RestTemplate();
-        String url = sonarAPI + "/projects/delete" +
-                "?project=" + project;
+        String url = sonarAPI + "/projects/delete" + "?project=" + project;
 
         ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, authHeader(), Object.class, HttpStatus.NO_CONTENT);
         response.getBody();
@@ -92,8 +86,7 @@ public class HttpRequests {
         String plainCreds = user + ":" + password;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-        String base64Creds = new String(base64CredsBytes);
-        return base64Creds;
+        return new String(base64CredsBytes);
     }
 
     private HttpEntity<String> authHeader() {
@@ -106,13 +99,12 @@ public class HttpRequests {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("Authorization", "Basic " + base64Creds());
-        return new HttpHeaders(headers) ;
+        return new HttpHeaders(headers);
     }
 
     private String metrics() {
         String[] metricsArray = {"coverage", "bugs", "new_violations", "lines", "statements"};
-        String metrics = String.join(",", metricsArray);
-        return metrics;
+        return String.join(",", metricsArray);
     }
 
 }
