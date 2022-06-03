@@ -4,8 +4,13 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.five.sonarqubot.client.Project;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.UUID;
 
 
 @RestController
@@ -34,16 +39,15 @@ public class HttpRequests {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<Object> create(@RequestBody Project project) {
-
+    public ResponseEntity<String> create(@RequestBody MultiValueMap formData) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = sonarAPI + "projects/create" +
-                "?name=" +  project.getName() + "&project=" + project.getProject() + "&visibility=" + project.getVisibility();
+        String url = sonarAPI + "/projects/create";
 
-        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, authHeader(), Object.class, HttpStatus.CREATED);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, contentHeader());
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
         response.getBody();
         return response;
-
     }
 
     @GetMapping("/analysis")
@@ -84,16 +88,25 @@ public class HttpRequests {
 
     }
 
-
-    private HttpEntity<String> authHeader() {
+    private String base64Creds() {
         String plainCreds = user + ":" + password;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
         String base64Creds = new String(base64CredsBytes);
+        return base64Creds;
+    }
 
+    private HttpEntity<String> authHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + base64Creds);
+        headers.add("Authorization", "Basic " + base64Creds());
         return new HttpEntity<>(headers);
+    }
+
+    private HttpHeaders contentHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("Authorization", "Basic " + base64Creds());
+        return new HttpHeaders(headers) ;
     }
 
     private String metrics() {

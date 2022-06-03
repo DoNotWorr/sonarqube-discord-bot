@@ -2,6 +2,7 @@ package org.five.sonarqubot.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -30,14 +31,18 @@ public class ProjectWebClient {
         getAllProjects.subscribe(project -> LOGGER.info("All existing projects: {}", project));
 
 
-//Project newProject= new Project("hej","hej","public");
-//        Mono<Object> createProject = client.post()
-//                .uri(builder -> builder.path("/create")
-//                        .build()).bodyValue(newProject)
-//                .retrieve()
-//                .bodyToMono(Object.class);
-//
-//        createProject.subscribe(project -> LOGGER.info("Project: {}", project));
+
+
+        LinkedMultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("name", "");
+        formData.add("project", "gej");
+
+        Mono<Object> createProject = client.post()
+                .uri("/create").bodyValue(formData)
+                .retrieve()
+                .bodyToMono(Object.class);
+
+        createProject.subscribe(project -> LOGGER.info("Project: {}", project));
 
         Flux<Object> projectAnalysis = client.get()
                 .uri(builder -> builder.path("/analysis")
