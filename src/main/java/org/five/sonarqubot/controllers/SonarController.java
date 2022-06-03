@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 @RestController
-public class HttpRequests {
+public class SonarController {
     @Value("${user}")
     private String user;
     @Value("${password}")

@@ -7,14 +7,19 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 
 public class ProjectWebClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectWebClient.class);
 
     WebClient client = WebClient.create("http://localhost:8080");
 
+    private String uuid= String.valueOf(UUID.randomUUID());
+
 
     public void consume() {
+
 
         Mono<String> helloMono = client.get()
                 .uri("/")
@@ -35,8 +40,8 @@ public class ProjectWebClient {
 
 
         LinkedMultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("name", "tjej");
-        formData.add("project", "tjej");
+        formData.add("name", uuid);
+        formData.add("project", uuid);
 
         Mono<Object> createProject = client.post()
                 .uri("/create").bodyValue(formData)
