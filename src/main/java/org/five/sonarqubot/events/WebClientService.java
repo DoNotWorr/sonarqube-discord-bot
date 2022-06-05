@@ -1,15 +1,14 @@
 package org.five.sonarqubot.events;
 
-import org.five.sonarqubot.client.ProjectResponse;
-import org.five.sonarqubot.client.TokenResponse;
+
 import reactor.core.publisher.Mono;
 
 public interface WebClientService {
 
-    Mono<TokenResponse> createToken();
+    Mono<String> createToken();
 
-    Mono<ProjectResponse> createProject();
+    Mono<String> createProject();
 
-    Mono<Analysis> projectAnalysis();
+    Mono<String> projectAnalysis();
 
 }

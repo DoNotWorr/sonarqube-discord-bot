@@ -1,64 +1,30 @@
 package org.five.sonarqubot.client;
 
+
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIncludeProperties()
 public class TokenResponse {
+    @JsonProperty("login")
     private String login;
+
+    @JsonProperty("name")
     private String name;
-    private String token;
+
+    @JsonProperty("token")
+    public String token;
+
+    @JsonProperty("createdAt")
     private DateTimeFormat createdAt;
 
-    public TokenResponse(){};
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public DateTimeFormat getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(DateTimeFormat createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    
-    public TokenResponse(String login, String name, DateTimeFormat createdAt, String token) {
-        this.login = login;
-        this.name = name;
-
-        this.createdAt = createdAt;
-        this.token = token;
-    }
-
-    @Override
-    public String toString() {
-        return "TokenResponse{" +
-                "login='" + login + '\'' +
-                ", name='" + name + '\'' +
-                ", token='" + token + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }
+
+

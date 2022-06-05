@@ -1,15 +1,9 @@
 package org.five.sonarqubot.events;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.five.sonarqubot.client.ProjectResponse;
-import org.five.sonarqubot.client.TokenResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,51 +11,40 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@Component
 @PropertySource("classpath:secret.properties")
 public class WebClientServiceImpl implements WebClientService {
     @Value("${user}")
-    private String user="admin";
+    private String user = "admin";
     @Value("${password}")
-    private String password="isa";
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebClientServiceImpl.class);
+    private String password = "isa";
+    @Value("${sonar.api.url}")
+    private String sonarAPI = "http://localhost:9000/api";
+    private final String uuid = String.valueOf(UUID.randomUUID());
+    private final WebClient client;
 
-    WebClient client = WebClient.builder()
-            .baseUrl("http://localhost:9000/api")
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-            .filter(ExchangeFilterFunctions
-                    .basicAuthentication(user, password))
-            .build();
-
-    private final String uuid= String.valueOf(UUID.randomUUID());
-
-    public String base64Creds() {
-        String plainCreds = user + ":" + password;
-        byte[] plainCredsBytes = plainCreds.getBytes();
-        byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-        return new String(base64CredsBytes);
+    public WebClientServiceImpl() {
+        this.client = WebClient.builder()
+                .baseUrl(sonarAPI)
+                .filter(ExchangeFilterFunctions
+                        .basicAuthentication(user, password))
+                .build();
     }
-    public String randomString() {
-        return RandomStringUtils.randomAlphabetic(3);
-    }
-
     @Override
-
-    public Mono<TokenResponse> createToken () {
-
+    public Mono<String> createToken() {
         LinkedMultiValueMap<String, String> tokenData = new LinkedMultiValueMap<>();
-        tokenData.add("name", randomString());
-
+        tokenData.add("name", uuid);
 
         return client.post()
-                .uri("/user_tokens/generate")
+                .uri(uriBuilder -> uriBuilder.path("/user_tokens/generate").build())
                 .bodyValue(tokenData)
                 .retrieve()
-                .bodyToMono(TokenResponse.class);
+                .bodyToMono(Object.class).map(result -> result.toString().split(",")[2].split("=")[1]);
+
     }
 
-
     @Override
-    public Mono<ProjectResponse> createProject () {
+    public Mono<String> createProject() {
         LinkedMultiValueMap<String, String> projectData = new LinkedMultiValueMap<>();
         projectData.add("name", uuid);
         projectData.add("project", uuid);
@@ -69,64 +52,19 @@ public class WebClientServiceImpl implements WebClientService {
         return client.post()
                 .uri("/projects/create").bodyValue(projectData)
                 .retrieve()
-                .bodyToMono(ProjectResponse.class);
+                .bodyToMono(Object.class).map(result -> result.toString().split(",")[1].split("=")[1]);
+
     }
 
     @Override
-    public Mono<Analysis> projectAnalysis () {
-        return null;
+    public Mono<String> projectAnalysis() {
+        return client.get()
+                .uri(builder -> builder.path("/measures/component")
+                        .queryParam("component", createProject().toString())
+                        .queryParam("metricKeys", "code_smells", "bugs", "duplicated_lines")
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class).log();
+
     }
-
-
-//    public void consume() {
-//
-//
-//        Mono<String> helloMono = client.get()
-//                .uri("/")
-//                .retrieve()
-//                .bodyToMono(String.class);
-//
-//        helloMono.subscribe(hello -> LOGGER.info("This should be hello world: {}", hello));
-//
-//
-//        LinkedMultiValueMap<String, String> tokenData = new LinkedMultiValueMap<>();
-//        tokenData.add("name", randomString());
-//
-//        Mono<Object> createToken = client.post()
-//                .uri("/token").bodyValue(tokenData)
-//                .retrieve()
-//                .bodyToMono(Object.class);
-//
-//        createToken.subscribe(project -> LOGGER.info("New usertoken: {}", project));
-//
-//
-//        LinkedMultiValueMap<String, String> projectData = new LinkedMultiValueMap<>();
-//        projectData.add("name", uuid);
-//        projectData.add("project", uuid);
-//
-//        Mono<Object> createProject = client.post()
-//                .uri("/create").bodyValue(projectData)
-//                .retrieve()
-//                .bodyToMono(Object.class);
-//
-//        createProject.subscribe(project -> LOGGER.info("Created project: {}", project));
-//
-//
-//        Flux<Object> getAllProjects = client.get()
-//                .uri("/search")
-//                .retrieve()
-//                .bodyToFlux(Object.class);
-//
-//        getAllProjects.subscribe(project -> LOGGER.info("All existing projects: {}", project));
-//
-//
-//        Flux<Object> projectAnalysis = client.get()
-//                .uri(builder -> builder.path("/analysis")
-//                        .queryParam("project", "First")
-//                        .build())
-//                .retrieve()
-//                .bodyToFlux(Object.class);
-//
-//        projectAnalysis.subscribe(project -> LOGGER.info("Project analysis result: {}", project));
-//    }
 }
