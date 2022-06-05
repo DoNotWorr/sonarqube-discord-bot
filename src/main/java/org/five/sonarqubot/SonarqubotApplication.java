@@ -1,6 +1,7 @@
 package org.five.sonarqubot;
 
-import org.five.sonarqubot.client.ProjectWebClient;
+
+import org.five.sonarqubot.events.WebClientServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,7 +11,8 @@ public class SonarqubotApplication {
     public static void main(String[] args) {
         SpringApplication.run(SonarqubotApplication.class, args);
 
-        ProjectWebClient projectWebClient = new ProjectWebClient();
-        projectWebClient.consume();
+       WebClientServiceImpl webClientServiceImpl  = new WebClientServiceImpl();
+        webClientServiceImpl.createToken().subscribe(project -> System.out.println(project));
+       // .map(tokenResponse -> tokenResponse.getToken()
     }
 }

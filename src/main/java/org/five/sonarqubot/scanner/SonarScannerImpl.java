@@ -14,7 +14,8 @@ import java.util.HashMap;
  * More information about available analysis parameters for Sonar Scanner in <a href="https://docs.sonarqube.org/latest/analysis/analysis-parameters/">SonarQube documentation</a> .
  */
 @Component
-public class SonarScannerImpl implements SonarScanner {
+public class
+SonarScannerImpl implements SonarScanner {
     @Value("${sonar.host.url}")
     private String SONAR_HOST_URL;
 

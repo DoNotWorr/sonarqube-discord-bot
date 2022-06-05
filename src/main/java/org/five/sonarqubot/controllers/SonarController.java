@@ -22,6 +22,18 @@ public class SonarController {
         return "Hello World! ";
     }
 
+
+    @PostMapping(path = "/token")
+    public ResponseEntity<String> createToken(@RequestBody MultiValueMap<String,String> tokenData) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = sonarAPI + "/user_tokens/generate";
+
+        HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(tokenData, contentHeader());
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class, HttpMethod.POST);
+        response.getBody();
+        return response;
+    }
     @GetMapping("/search")
     public ResponseEntity<Object> getProjects() {
 
@@ -34,7 +46,7 @@ public class SonarController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<String> create(@RequestBody MultiValueMap<String,String> formData) {
+    public ResponseEntity<String> createProject(@RequestBody MultiValueMap<String,String> formData) {
         RestTemplate restTemplate = new RestTemplate();
         String url = sonarAPI + "/projects/create";
 
@@ -81,13 +93,13 @@ public class SonarController {
         return response;
 
     }
-
-    private String base64Creds() {
+    public String base64Creds() {
         String plainCreds = user + ":" + password;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
         return new String(base64CredsBytes);
     }
+
 
     private HttpEntity<String> authHeader() {
         HttpHeaders headers = new HttpHeaders();
@@ -103,7 +115,7 @@ public class SonarController {
     }
 
     private String metrics() {
-        String[] metricsArray = {"coverage", "bugs", "new_violations", "lines", "statements"};
+        String[] metricsArray = {"code_smells", "bugs", "duplicated_lines"};
         return String.join(",", metricsArray);
     }
 

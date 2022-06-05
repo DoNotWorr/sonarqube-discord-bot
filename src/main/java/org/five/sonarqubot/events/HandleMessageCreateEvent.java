@@ -27,7 +27,7 @@ public class HandleMessageCreateEvent implements EventListener<MessageCreateEven
         return messageService.onlyCodeMessages(event.getMessage())
                 .flatMap(messageService::getCode)
                 .flatMap(fileService::createFile)
-                .flatMap(fileName -> sonarScanner.scan("key", "a8d983ea21012b881ae8123d0db6938b04205903", fileName) //todo replace hardcoded projectKey, projectToken
+                .flatMap(fileName -> sonarScanner.scan("aefe1cf8-d698-49fa-898b-8d4525c094d6", "a348d8a997b4394c91b76e6da93a7d7f449fdf29", fileName) //todo replace hardcoded projectKey, projectToken
                         .onErrorResume(throwable -> event.getMessage()
                                 .getChannel()
                                 .flatMap(messageChannel -> messageChannel.createMessage("I couldn't analyze your message."))

@@ -1,23 +1,16 @@
 package org.five.sonarqubot.client;
 
-public class Project {
+public class ProjectResponse {
     private String name;
     private String project;
     private String visibility;
     private String qualifier;
 
-    public Project() {
-    }
+    public ProjectResponse() {
+    };
 
-    ;
 
-    public Project(String name, String project, String visibility) {
-        this.name = name;
-        this.project = project;
-        this.visibility = visibility;
-    }
-
-    public Project(String name, String project, String visibility, String qualifier) {
+    public ProjectResponse(String name, String project, String visibility, String qualifier) {
 
         this.name = name;
         this.project = project;
