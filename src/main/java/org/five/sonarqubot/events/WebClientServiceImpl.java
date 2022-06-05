@@ -15,9 +15,9 @@ import java.util.UUID;
 @PropertySource("classpath:secret.properties")
 public class WebClientServiceImpl implements WebClientService {
     @Value("${user}")
-    private String user = "admin";
+    private String user;
     @Value("${password}")
-    private String password = "isa";
+    private String password;
     @Value("${sonar.api.url}")
     private String sonarAPI = "http://localhost:9000/api";
     private final String uuid = String.valueOf(UUID.randomUUID());
