@@ -10,11 +10,13 @@ public class HandleMessageCreateEvent implements EventListener<MessageCreateEven
     private final SonarScanner sonarScanner;
     private final MessageService messageService;
     private final FileService fileService;
+    private final WebClientService webClientService;
 
-    public HandleMessageCreateEvent(SonarScanner sonarScanner, MessageService messageService, FileService fileService) {
+    public HandleMessageCreateEvent(SonarScanner sonarScanner, MessageService messageService, FileService fileService, WebClientService webClientService) {
         this.sonarScanner = sonarScanner;
         this.messageService = messageService;
         this.fileService = fileService;
+        this.webClientService = webClientService;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class HandleMessageCreateEvent implements EventListener<MessageCreateEven
         return messageService.onlyCodeMessages(event.getMessage())
                 .flatMap(messageService::getCode)
                 .flatMap(fileService::createFile)
-                .flatMap(fileName -> sonarScanner.scan("key", "a8d983ea21012b881ae8123d0db6938b04205903", fileName) //todo replace hardcoded projectKey, projectToken
+                .flatMap(fileName -> webClientService.createToken().flatMap(token -> webClientService.createProject().flatMap(key -> sonarScanner.scan(key, token, fileName)))
                         .onErrorResume(throwable -> event.getMessage()
                                 .getChannel()
                                 .flatMap(messageChannel -> messageChannel.createMessage("I couldn't analyze your message."))
