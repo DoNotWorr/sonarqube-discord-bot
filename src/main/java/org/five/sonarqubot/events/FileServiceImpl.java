@@ -67,7 +67,7 @@ public class FileServiceImpl implements FileService {
 
     private void writeToFile(String code, File file) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()))) {
-            bw.write(code);
+            bw.write("public class ClassNameGeneratedBySonarQubot {\n" + code + "\n}"); //todo hardcoded for Java
         } catch (IOException e) {
             LOG.error("Sorry, there was a problem to write to the file");
             e.printStackTrace();
