@@ -14,16 +14,11 @@ import java.util.UUID;
 @Component
 @PropertySource("classpath:secret.properties")
 public class WebClientServiceImpl implements WebClientService {
-    @Value("${user}")
-    private String user;
-    @Value("${password}")
-    private String password;
-    @Value("${sonar.api.url}")
-    private String sonarAPI = "http://localhost:9000/api";
+
     private final String uuid = String.valueOf(UUID.randomUUID());
     private final WebClient client;
 
-    public WebClientServiceImpl() {
+    public WebClientServiceImpl(@Value("${user}") String user, @Value("${password}") String password, @Value("${sonar.api.url}") String sonarAPI) {
         this.client = WebClient.builder()
                 .baseUrl(sonarAPI)
                 .filter(ExchangeFilterFunctions
