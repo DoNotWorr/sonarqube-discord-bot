@@ -16,7 +16,7 @@ import java.util.List;
 @PropertySource("classpath:secret.properties")
 public class BotConfiguration {
 
-    @Value("${token}")
+    @Value("${discord.bot.token}")
     private String token;
 
     @Bean
