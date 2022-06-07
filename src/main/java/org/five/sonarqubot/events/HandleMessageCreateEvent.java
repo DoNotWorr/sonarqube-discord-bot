@@ -34,8 +34,12 @@ public class HandleMessageCreateEvent implements EventListener<MessageCreateEven
                                 .flatMap(key -> sonarScanner.scan(key, token, fileName))
                                 .onErrorResume(throwable -> event.getMessage()
                                         .getChannel()
-                                        .flatMap(messageChannel -> messageChannel.createMessage("I couldn't analyze your message."))
+                                        .flatMap(messageChannel -> messageChannel.createMessage("I couldn't analyze your message. Please try again"))
                                         .then()))
-                );
+                )
+                .onErrorResume(throwable -> event.getMessage()
+                        .getChannel()
+                        .flatMap(messageChannel -> messageChannel.createMessage("Something went wrong. Please restart the Spring Application and try again"))
+                        .then());
     }
 }
