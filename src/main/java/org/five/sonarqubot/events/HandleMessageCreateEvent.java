@@ -29,10 +29,13 @@ public class HandleMessageCreateEvent implements EventListener<MessageCreateEven
         return messageService.onlyCodeMessages(event.getMessage())
                 .flatMap(messageService::getCode)
                 .flatMap(fileService::createFile)
-                .flatMap(fileName -> webClientService.createToken().flatMap(token -> webClientService.createProject().flatMap(key -> sonarScanner.scan(key, token, fileName)))
-                        .onErrorResume(throwable -> event.getMessage()
-                                .getChannel()
-                                .flatMap(messageChannel -> messageChannel.createMessage("I couldn't analyze your message."))
-                                .then()));
+                .flatMap(fileName -> webClientService.createToken()
+                        .flatMap(token -> webClientService.createProject()
+                                .flatMap(key -> sonarScanner.scan(key, token, fileName))
+                                .onErrorResume(throwable -> event.getMessage()
+                                        .getChannel()
+                                        .flatMap(messageChannel -> messageChannel.createMessage("I couldn't analyze your message."))
+                                        .then()))
+                );
     }
 }

@@ -18,23 +18,27 @@ public class WebClientServiceImpl implements WebClientService {
     private final String uuid = String.valueOf(UUID.randomUUID());
     private final WebClient client;
 
-    public WebClientServiceImpl(@Value("${user}") String user, @Value("${password}") String password, @Value("${sonar.api.url}") String sonarAPI) {
+    public WebClientServiceImpl(@Value("${sonar.user}") String user, @Value("${sonar.password}") String password, @Value("${sonar.api.url}") String sonarAPI) {
         this.client = WebClient.builder()
                 .baseUrl(sonarAPI)
                 .filter(ExchangeFilterFunctions
                         .basicAuthentication(user, password))
                 .build();
     }
+
     @Override
     public Mono<String> createToken() {
         LinkedMultiValueMap<String, String> tokenData = new LinkedMultiValueMap<>();
         tokenData.add("name", uuid);
 
         return client.post()
-                .uri(uriBuilder -> uriBuilder.path("/user_tokens/generate").build())
+                .uri(uriBuilder -> uriBuilder.path("/user_tokens/generate")
+                        .build())
                 .bodyValue(tokenData)
                 .retrieve()
-                .bodyToMono(Object.class).map(result -> result.toString().split(",")[2].split("=")[1]);
+                .bodyToMono(Object.class)
+                .map(result -> result.toString()
+                        .split(",")[2].split("=")[1]);
 
     }
 
@@ -45,9 +49,12 @@ public class WebClientServiceImpl implements WebClientService {
         projectData.add("project", uuid);
 
         return client.post()
-                .uri("/projects/create").bodyValue(projectData)
+                .uri("/projects/create")
+                .bodyValue(projectData)
                 .retrieve()
-                .bodyToMono(Object.class).map(result -> result.toString().split(",")[1].split("=")[1]);
+                .bodyToMono(Object.class)
+                .map(result -> result.toString()
+                        .split(",")[1].split("=")[1]);
 
     }
 
@@ -59,7 +66,8 @@ public class WebClientServiceImpl implements WebClientService {
                         .queryParam("metricKeys", "code_smells", "bugs", "duplicated_lines")
                         .build())
                 .retrieve()
-                .bodyToMono(String.class).log();
+                .bodyToMono(String.class)
+                .log();
 
     }
 }
